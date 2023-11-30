@@ -4,7 +4,7 @@ from modules.shared import opts
 from modules import extensions
 
 # Handy constants
-PHOTOPEA_MAIN_URL = "https://www.photopea.com/"
+PHOTOPEA_MAIN_URL = "https://autmake.com/ps"
 PHOTOPEA_IFRAME_ID = "webui-photopea-iframe"
 PHOTOPEA_IFRAME_HEIGHT = 768
 PHOTOPEA_IFRAME_WIDTH = "100%"
