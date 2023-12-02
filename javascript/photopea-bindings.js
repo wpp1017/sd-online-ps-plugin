@@ -321,13 +321,13 @@ function onPhotopeaLoaded(iframe) {
     createSendToPhotopeaButton("image_buttons_extras", window.extras_gallery);
 
     // Listen to the size slider changes.
-    gradioApp().getElementById("photopeaIframeSlider").addEventListener('input', (event) => {
-        // Get the value of the slider and parse it as an integer
-        const newHeight = parseInt(event.target.value);
-
-        // Update the height of the iframe
-        photopeaIframe.style.height = newHeight + 'px';
-    });
+    // gradioApp().getElementById("photopeaIframeSlider").addEventListener('input', (event) => {
+    //     // Get the value of the slider and parse it as an integer
+    //     const newHeight = parseInt(event.target.value);
+    //
+    //     // Update the height of the iframe
+    //     photopeaIframe.style.height = newHeight + 'px';
+    // });
 
     // 接收来自子级页面的消息
     window.addEventListener('message', function(event) {
