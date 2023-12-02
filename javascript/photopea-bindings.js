@@ -327,6 +327,10 @@ function onPhotopeaLoaded(iframe) {
 
     // 接收来自子级页面的消息
     window.addEventListener('message', function(event) {
+        const {type,webUiTab, sendToControlnet, imageWidgetIndex} = event.data;
+        if(type === 'getAndSendImageToWebUITab') {
+            getAndSendImageToWebUITab(webUiTab, sendToControlnet, imageWidgetIndex);
+        }
         console.log('父级页面接收到消息：', event);
     });
 
