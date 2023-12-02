@@ -2,34 +2,6 @@
 var photopeaWindow = null;
 var photopeaIframe = null;
 
-// Called by the iframe set up on photopea-tab.py.
-function onPhotopeaLoaded(iframe) {
-    console.log("Photopea iFrame loaded");
-    photopeaWindow = iframe.contentWindow;
-    photopeaIframe = iframe;
-
-    // Clone some buttons to send the contents of galleries in txt2img, img2img and extras tabs
-    // to Photopea. You can also just copy-paste the images directly but these are the ones I
-    // use the most.
-    createSendToPhotopeaButton("image_buttons_txt2img", window.txt2img_gallery);
-    createSendToPhotopeaButton("image_buttons_img2img", window.img2img_gallery);
-    createSendToPhotopeaButton("image_buttons_extras", window.extras_gallery);
-
-    // Listen to the size slider changes.
-    gradioApp().getElementById("photopeaIframeSlider").addEventListener('input', (event) => {
-        // Get the value of the slider and parse it as an integer
-        const newHeight = parseInt(event.target.value);
-
-        // Update the height of the iframe
-        photopeaIframe.style.height = newHeight + 'px';
-    });
-
-    // give curent window to photopea
-    photopeaWindow.postMessage({
-        parentWindow: window
-    }, "*");
-}
-
 // Creates a button in one of the WebUI galleries that will get the currently selected image in the 
 // gallery.
 // `queryId`: the id for the querySelector to search for the specific gallery list of buttons.
@@ -329,4 +301,32 @@ function controlNetAccordionIsCollapsed(controlNetDiv) {
     // As a fallback, to prevent constantly triggering the toggle in case future versions break
     // this heuristic, we just return false.
     return false;
+}
+
+// Called by the iframe set up on photopea-tab.py.
+function onPhotopeaLoaded(iframe) {
+    console.log("Photopea iFrame loaded");
+    photopeaWindow = iframe.contentWindow;
+    photopeaIframe = iframe;
+
+    // Clone some buttons to send the contents of galleries in txt2img, img2img and extras tabs
+    // to Photopea. You can also just copy-paste the images directly but these are the ones I
+    // use the most.
+    createSendToPhotopeaButton("image_buttons_txt2img", window.txt2img_gallery);
+    createSendToPhotopeaButton("image_buttons_img2img", window.img2img_gallery);
+    createSendToPhotopeaButton("image_buttons_extras", window.extras_gallery);
+
+    // Listen to the size slider changes.
+    gradioApp().getElementById("photopeaIframeSlider").addEventListener('input', (event) => {
+        // Get the value of the slider and parse it as an integer
+        const newHeight = parseInt(event.target.value);
+
+        // Update the height of the iframe
+        photopeaIframe.style.height = newHeight + 'px';
+    });
+
+    // give curent window to photopea
+    photopeaWindow.postMessage({
+        getAndSendImageToWebUITab: getAndSendImageToWebUITab
+    }, "*");
 }
