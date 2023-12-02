@@ -88,13 +88,17 @@ function openImageInPhotopea(originGallery) {
 
 // Requests the image from Photopea, converts the array result into a base64 png, then a blob, then
 // actually send it to the WebUI.
-function getAndSendImageToWebUITab(webUiTab, sendToControlnet, imageWidgetIndex) {
+function getAndSendImageToWebUITab(webUiTab, sendToControlnet, imageWidgetIndex, isCurrentLayer) {
     // Photopea only allows exporting the whole image, so in case "Active layer only" is selected in
     // the UI, instead of just requesting the image to be saved, we also make all non-selected
     // layers invisible.
-    const saveMessage = activeLayerOnly()
-        ? getPhotopeaScriptString(exportSelectedLayerOnly)
-        : 'app.activeDocument.saveToOE("png");';
+    // const saveMessage = activeLayerOnly()
+    //     ? getPhotopeaScriptString(exportSelectedLayerOnly)
+    //     : 'app.activeDocument.saveToOE("png");';
+
+    const saveMessage = isCurrentLayer === 'true'
+      ? getPhotopeaScriptString(exportSelectedLayerOnly)
+      : 'app.activeDocument.saveToOE("png");';
 
     postMessageToPhotopea(saveMessage)
         .then((resultArray) => {
@@ -327,9 +331,9 @@ function onPhotopeaLoaded(iframe) {
 
     // 接收来自子级页面的消息
     window.addEventListener('message', function(event) {
-        const {type,webUiTab, sendToControlnet, imageWidgetIndex} = event.data;
+        const {type,webUiTab, sendToControlnet, imageWidgetIndex, isCurrentLayer} = event.data;
         if(type === 'getAndSendImageToWebUITab') {
-            getAndSendImageToWebUITab(webUiTab, sendToControlnet, imageWidgetIndex);
+            getAndSendImageToWebUITab(webUiTab, sendToControlnet, imageWidgetIndex, isCurrentLayer);
         }
         if(type === 'sendImageWithMaskSelectionToWebUi') {
             sendImageWithMaskSelectionToWebUi();
