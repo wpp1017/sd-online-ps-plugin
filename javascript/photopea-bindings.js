@@ -23,6 +23,11 @@ function onPhotopeaLoaded(iframe) {
         // Update the height of the iframe
         photopeaIframe.style.height = newHeight + 'px';
     });
+
+    // give curent window to photopea
+    photopeaWindow.postMessage({
+        parentWindow: window
+    }, "*");
 }
 
 // Creates a button in one of the WebUI galleries that will get the currently selected image in the 
