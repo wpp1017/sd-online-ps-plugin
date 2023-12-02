@@ -61,58 +61,54 @@ def on_ui_tabs():
                 elem_id="photopeaIframeSlider",
             )
 
-        with gr.Row():
-            with gr.Column():
-                gr.HTML(
-                    """<b>Controlnet extension not found!</b> Either <a href="https://github.com/Mikubill/sd-webui-controlnet" target="_blank">install it</a>, or activate it under Settings.""",
-                    visible=not controlnet_exists,
-                )
-                send_t2i_cn = gr.Button(
-                    value="Send to txt2img ControlNet", visible=controlnet_exists
-                )
-                send_extras = gr.Button(value="Send to Extras")
-
-            with gr.Column():
-                send_i2i = gr.Button(value="Send to img2img")
-                send_i2i_cn = gr.Button(
-                    value="Send to img2img ControlNet", visible=controlnet_exists
-                )
-            with gr.Column():
-                send_selection_inpaint = gr.Button(value="Inpaint selection")
-
-        with gr.Row():
-            gr.HTML(
-                """<font size="small"><p align="right">Consider supporting Photopea by <a href="https://www.photopea.com/api/accounts" target="_blank">going Premium</a>!</font></p>"""
-            )
-        # The getAndSendImageToWebUITab in photopea-bindings.js takes the following parameters:
-        #  webUiTab: the name of the tab. Used to find the gallery via DOM queries.
-        #  sendToControlnet: if true, tries to send it to a specific ControlNet widget, otherwise, sends to the native WebUI widget.
-        #  controlnetModelIndex: the index of the desired controlnet model tab.
-        send_t2i_cn.click(
-            None,
-            select_target_index,
-            None,
-            _js="(i) => {getAndSendImageToWebUITab('txt2img', true, i)}",
-        )
-        send_extras.click(
-            None,
-            select_target_index,
-            None,
-            _js="(i) => {getAndSendImageToWebUITab('extras', false, i)}",
-        )
-        send_i2i.click(
-            None,
-            select_target_index,
-            None,
-            _js="(i) => {getAndSendImageToWebUITab('img2img', false, i)}",
-        )
-        send_i2i_cn.click(
-            None,
-            select_target_index,
-            None,
-            _js="(i) => {getAndSendImageToWebUITab('img2img', true, i)}",
-        )
-        send_selection_inpaint.click(fn=None, _js="sendImageWithMaskSelectionToWebUi")
+#         with gr.Row():
+#             with gr.Column():
+#                 gr.HTML(
+#                     """<b>Controlnet extension not found!</b> Either <a href="https://github.com/Mikubill/sd-webui-controlnet" target="_blank">install it</a>, or activate it under Settings.""",
+#                     visible=not controlnet_exists,
+#                 )
+#                 send_t2i_cn = gr.Button(
+#                     value="Send to txt2img ControlNet", visible=controlnet_exists
+#                 )
+#                 send_extras = gr.Button(value="Send to Extras")
+#
+#             with gr.Column():
+#                 send_i2i = gr.Button(value="Send to img2img")
+#                 send_i2i_cn = gr.Button(
+#                     value="Send to img2img ControlNet", visible=controlnet_exists
+#                 )
+#             with gr.Column():
+#                 send_selection_inpaint = gr.Button(value="Inpaint selection")
+#
+#         with gr.Row():
+#             gr.HTML(
+#                 """<font size="small"><p align="right">Consider supporting Photopea by <a href="https://www.photopea.com/api/accounts" target="_blank">going Premium</a>!</font></p>"""
+#             )
+#         send_t2i_cn.click(
+#             None,
+#             select_target_index,
+#             None,
+#             _js="(i) => {getAndSendImageToWebUITab('txt2img', true, i)}",
+#         )
+#         send_extras.click(
+#             None,
+#             select_target_index,
+#             None,
+#             _js="(i) => {getAndSendImageToWebUITab('extras', false, i)}",
+#         )
+#         send_i2i.click(
+#             None,
+#             select_target_index,
+#             None,
+#             _js="(i) => {getAndSendImageToWebUITab('img2img', false, i)}",
+#         )
+#         send_i2i_cn.click(
+#             None,
+#             select_target_index,
+#             None,
+#             _js="(i) => {getAndSendImageToWebUITab('img2img', true, i)}",
+#         )
+#         send_selection_inpaint.click(fn=None, _js="sendImageWithMaskSelectionToWebUi")
 
     return [(photopea_tab, "Photopea", "photopea_embed")]
 
