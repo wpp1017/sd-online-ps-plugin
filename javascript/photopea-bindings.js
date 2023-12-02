@@ -331,6 +331,9 @@ function onPhotopeaLoaded(iframe) {
         if(type === 'getAndSendImageToWebUITab') {
             getAndSendImageToWebUITab(webUiTab, sendToControlnet, imageWidgetIndex);
         }
+        if(type === 'sendImageWithMaskSelectionToWebUi') {
+            sendImageWithMaskSelectionToWebUi();
+        }
         console.log('父级页面接收到消息：', event);
     });
 
