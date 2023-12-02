@@ -325,8 +325,9 @@ function onPhotopeaLoaded(iframe) {
         photopeaIframe.style.height = newHeight + 'px';
     });
 
-    // give curent window to photopea
-    photopeaWindow.postMessage({
-        getAndSendImageToWebUITab: getAndSendImageToWebUITab
-    }, "*");
+    // 接收来自子级页面的消息
+    window.addEventListener('message', function(event) {
+        console.log('父级页面接收到消息：', event);
+    });
+
 }
