@@ -30,25 +30,24 @@ def on_ui_tabs():
                 height = "{PHOTOPEA_IFRAME_HEIGHT}"
                 onload = "{PHOTOPEA_IFRAME_LOADED_EVENT}(this)">"""
             )
-        with gr.Row():
-            gr.Checkbox(
-                label="Active Layer Only",
-                info="If true, instead of sending the flattened image, will send just the currently selected layer.",
-                elem_id="photopea-use-active-layer-only",
-            )
-            # Controlnet might have more than one model tab (set by the 'control_net_max_models_num' setting).
-            try:
-                num_controlnet_models = opts.control_net_unit_count
-            except:
-                num_controlnet_models = 1
-
-            select_target_index = gr.Dropdown(
-                [str(i) for i in range(num_controlnet_models)],
-                label="ControlNet model index",
-                value="0",
-                interactive=True,
-                visible=num_controlnet_models > 1,
-            )
+#         with gr.Row():
+#             gr.Checkbox(
+#                 label="Active Layer Only",
+#                 info="If true, instead of sending the flattened image, will send just the currently selected layer.",
+#                 elem_id="photopea-use-active-layer-only",
+#             )
+#             try:
+#                 num_controlnet_models = opts.control_net_unit_count
+#             except:
+#                 num_controlnet_models = 1
+#
+#             select_target_index = gr.Dropdown(
+#                 [str(i) for i in range(num_controlnet_models)],
+#                 label="ControlNet model index",
+#                 value="0",
+#                 interactive=True,
+#                 visible=num_controlnet_models > 1,
+#             )
 
             # Just create the size slider here. We'll modify the page via the js bindings.
 #             gr.Slider(
@@ -80,10 +79,10 @@ def on_ui_tabs():
 #             with gr.Column():
 #                 send_selection_inpaint = gr.Button(value="Inpaint selection")
 
-        with gr.Row():
-            gr.HTML(
-                """<font size="small"><p align="right">Consider supporting Photopea by <a href="https://www.photopea.com/api/accounts" target="_blank">going Premium</a>!</font></p>"""
-            )
+#         with gr.Row():
+#             gr.HTML(
+#                 """<font size="small"><p align="right">Consider supporting Photopea by <a href="https://www.photopea.com/api/accounts" target="_blank">going Premium</a>!</font></p>"""
+#             )
         # The getAndSendImageToWebUITab in photopea-bindings.js takes the following parameters:
         #  webUiTab: the name of the tab. Used to find the gallery via DOM queries.
         #  sendToControlnet: if true, tries to send it to a specific ControlNet widget, otherwise, sends to the native WebUI widget.
