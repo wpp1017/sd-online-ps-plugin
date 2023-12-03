@@ -20,7 +20,7 @@ In the **Photopea** extension tab, you will have the embedded Photopea window. I
 
 ### Options:
 * **Active Layer Only**: if this box is ticked, only the currently selected layer in Photopea will be sent to the WebUI when using one of the buttons.
-* **iFrame height**:  by default, the Photopea embed is 768px tall, and 100% wide. If you have more or less monitor real estate, you can use the slider to increase or decrease the size of the Photopea window in your tab.
+* **iFrame height**:  by default, the Photopea embed is 790px tall, and 100% wide. If you have more or less monitor real estate, you can use the slider to increase or decrease the size of the Photopea window in your tab.
 
 ### Buttons:
 * **Send to Extras**: sends the currently opened image's flattened contents to the Extras tab. Useful for upscaling etc.

@@ -4,9 +4,9 @@ from modules.shared import opts
 from modules import extensions
 
 # Handy constants
-PHOTOPEA_MAIN_URL = "https://autmake.com/ps"
+PHOTOPEA_MAIN_URL = "https://autmake.com/sdplugin"
 PHOTOPEA_IFRAME_ID = "webui-photopea-iframe"
-PHOTOPEA_IFRAME_HEIGHT = 768
+PHOTOPEA_IFRAME_HEIGHT = 790
 PHOTOPEA_IFRAME_WIDTH = "100%"
 PHOTOPEA_IFRAME_LOADED_EVENT = "onPhotopeaLoaded"
 
@@ -52,7 +52,7 @@ def on_ui_tabs():
 #             gr.Slider(
 #                 minimum=512,
 #                 maximum=2160,
-#                 value=768,
+#                 value=790,
 #                 step=10,
 #                 label="iFrame height",
 #                 interactive=True,
