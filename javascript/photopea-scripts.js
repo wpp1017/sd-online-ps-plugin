@@ -1,11 +1,11 @@
-/* Photopea scripts */
-// The scripts listed here run within Photopea context. We pass them into the app as strings via
+/* PS scripts */
+// The scripts listed here run within PS context. We pass them into the app as strings via
 // POST messages.
 
 // Hides all layers except the current one, outputs the whole image, then restores the previous
 // layers state. I'm pretty sure getAndSendImageToWebUITab() using the same code path for this
 // script and for the regular saveToOE call works out of sheer luck: we register the listener on
-// postMessageToPhotopea, then receive the data for the internal app.activeDocument.saveToOE("jpg");
+// postMessageToPS, then receive the data for the internal app.activeDocument.saveToOE("jpg");
 // below, then its done, and that solves the promise, but we end up with a dangling "done"
 // response from the script execution message. But hey, if it works... ^^'
 function exportSelectedLayerOnly() {

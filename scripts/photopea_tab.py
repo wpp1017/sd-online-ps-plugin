@@ -4,16 +4,16 @@ from modules.shared import opts
 from modules import extensions
 
 # Handy constants
-PHOTOPEA_MAIN_URL = "https://autmake.com/sdplugin"
-PHOTOPEA_IFRAME_ID = "webui-photopea-iframe"
-PHOTOPEA_IFRAME_HEIGHT = 790
-PHOTOPEA_IFRAME_WIDTH = "100%"
-PHOTOPEA_IFRAME_LOADED_EVENT = "onPhotopeaLoaded"
+PS_MAIN_URL = "https://autmake.com/sdplugin"
+PS_IFRAME_ID = "webui-PS-iframe"
+PS_IFRAME_HEIGHT = 790
+PS_IFRAME_WIDTH = "100%"
+PS_IFRAME_LOADED_EVENT = "onPSLoaded"
 
 
-# Adds the "Photopea" tab to the WebUI
+# Adds the "PS" tab to the WebUI
 def on_ui_tabs():
-    with gr.Blocks(analytics_enabled=False) as photopea_tab:
+    with gr.Blocks(analytics_enabled=False) as PS_tab:
         # Check if Controlnet is installed and enabled in settings, so we can show or hide the "Send to Controlnet" buttons.
         controlnet_exists = False
         for extension in extensions.active():
@@ -22,19 +22,19 @@ def on_ui_tabs():
                 break
 
         with gr.Row():
-            # Add an iframe with Photopea directly in the tab.
+            # Add an iframe with PS directly in the tab.
             gr.HTML(
-                f"""<iframe id="{PHOTOPEA_IFRAME_ID}" 
-                src = "{PHOTOPEA_MAIN_URL}{get_photopea_url_params()}" 
-                width = "{PHOTOPEA_IFRAME_WIDTH}" 
-                height = "{PHOTOPEA_IFRAME_HEIGHT}"
-                onload = "{PHOTOPEA_IFRAME_LOADED_EVENT}(this)">"""
+                f"""<iframe id="{PS_IFRAME_ID}"
+                src = "{PS_MAIN_URL}{get_PS_url_params()}"
+                width = "{PS_IFRAME_WIDTH}"
+                height = "{PS_IFRAME_HEIGHT}"
+                onload = "{PS_IFRAME_LOADED_EVENT}(this)">"""
             )
 #         with gr.Row():
 #             gr.Checkbox(
 #                 label="Active Layer Only",
 #                 info="If true, instead of sending the flattened image, will send just the currently selected layer.",
-#                 elem_id="photopea-use-active-layer-only",
+#                 elem_id="PS-use-active-layer-only",
 #             )
 #             try:
 #                 num_controlnet_models = opts.control_net_unit_count
@@ -56,7 +56,7 @@ def on_ui_tabs():
 #                 step=10,
 #                 label="iFrame height",
 #                 interactive=True,
-#                 elem_id="photopeaIframeSlider",
+#                 elem_id="PSIframeSlider",
 #             )
 
 #         with gr.Row():
@@ -80,7 +80,7 @@ def on_ui_tabs():
 #
 #         with gr.Row():
 #             gr.HTML(
-#                 """<font size="small"><p align="right">Consider supporting Photopea by <a href="https://www.photopea.com/api/accounts" target="_blank">going Premium</a>!</font></p>"""
+#                 """<font size="small"><p align="right">Consider supporting PS by <a href="https://www.PS.com/api/accounts" target="_blank">going Premium</a>!</font></p>"""
 #             )
 #         send_t2i_cn.click(
 #             None,
@@ -108,11 +108,11 @@ def on_ui_tabs():
 #         )
 #         send_selection_inpaint.click(fn=None, _js="sendImageWithMaskSelectionToWebUi")
 
-    return [(photopea_tab, "Photopea", "photopea_embed")]
+    return [(PS_tab, "PS", "PS_embed")]
 
 
-# Initialize Photopea with an empty, 512x512 white image. It's baked as a base64 string with URI encoding.
-def get_photopea_url_params():
+# Initialize PS with an empty, 512x512 white image. It's baked as a base64 string with URI encoding.
+def get_PS_url_params():
     return "#%7B%22resources%22:%5B%22data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIAAQMAAADOtka5AAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAANQTFRF////p8QbyAAAADZJREFUeJztwQEBAAAAgiD/r25IQAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfBuCAAAB0niJ8AAAAABJRU5ErkJggg==%22%5D%7D"
 
 

@@ -1,31 +1,31 @@
 /* Setup and navigation */
-var photopeaWindow = null;
-var photopeaIframe = null;
+var PSWindow = null;
+var PSIframe = null;
 
 // Creates a button in one of the WebUI galleries that will get the currently selected image in the 
 // gallery.
 // `queryId`: the id for the querySelector to search for the specific gallery list of buttons.
 // `gallery`: the gallery div itself (cached by WebUI).
-function createSendToPhotopeaButton(queryId, gallery) {
+function createSendToPSButton(queryId, gallery) {
     const existingButton = gradioApp().querySelector(`#${queryId} button`);
     const newButton = existingButton.cloneNode(true);
     newButton.style.display = "flex";
-    newButton.id = `${queryId}_open_in_photopea`;
-    newButton.title = "Send to Photopea"
-    newButton.textContent = "\u{1F99C}";
-    newButton.addEventListener("click", () => openImageInPhotopea(gallery));
+    newButton.id = `${queryId}_open_in_PS`;
+    newButton.title = "Send to PS"
+    newButton.textContent = "PS";
+    newButton.addEventListener("click", () => openImageInPS(gallery));
     existingButton.parentNode.appendChild(newButton);
 }
 
-// Switches to the "Photopea" tab by finding and clicking on the DOM button.
-function goToPhotopeaTab() {
-    // Find Photopea tab button, as we don't know which order it might appear in.
+// Switches to the "PS" tab by finding and clicking on the DOM button.
+function goToPSTab() {
+    // Find PS tab button, as we don't know which order it might appear in.
     const allButtons = gradioApp().querySelector('#tabs').querySelectorAll('button');
     // The space after the name seems to be added automatically for some reason, so this is likely
-    // flaky across versions. We can't use "contains" because there's also "Send to Photopea"
+    // flaky across versions. We can't use "contains" because there's also "Send to PS"
     // buttons.
-    photopeaTabButton = Array.from(allButtons).find(button => button.textContent === 'Photopea ');
-    photopeaTabButton.click();
+    PSTabButton = Array.from(allButtons).find(button => button.textContent === 'PS ');
+    PSTabButton.click();
 }
 
 // Navigates the UI to the "Inpaint Upload" tab under the img2img tab.
@@ -50,19 +50,19 @@ function goToImg2ImgInpaintUpload(onFinished) {
 // Returns true if the "Active Layer Only" checkbox is ticked, false otherwise.
 function activeLayerOnly() {
     return gradioApp()
-        .getElementById("photopea-use-active-layer-only")
+        .getElementById("PS-use-active-layer-only")
         .querySelector("input[type=checkbox]").checked;
 }
 
-// Gets the currently selected image in a WebUI gallery and opens it in Photopea.
-function openImageInPhotopea(originGallery) {
+// Gets the currently selected image in a WebUI gallery and opens it in PS.
+function openImageInPS(originGallery) {
     var imageSizeMatches = true;
     const outgoingImg = originGallery.querySelectorAll("img")[0];
-    goToPhotopeaTab();
+    goToPSTab();
 
     // First, check the image size to see if we have matching sizes. If it's bigger, we open it
     // as a new document. Otherwise, we just append it to the current document as a new layer.
-    postMessageToPhotopea(getPhotopeaScriptString(getActiveDocumentSize)).then((response) => {
+    postMessageToPS(getPSScriptString(getActiveDocumentSize)).then((response) => {
         const activeDocSize = response[0].split(",");
         if (outgoingImg.naturalWidth > activeDocSize[0] || 
             outgoingImg.naturalHeight > activeDocSize[1]) {
@@ -70,13 +70,13 @@ function openImageInPhotopea(originGallery) {
         }
 
         blobTob64(outgoingImg.src, (imageData) => {
-            // Actually open the image, passing `imageSizeMatches` into Photopea's "open as new document" parameter.
-            postMessageToPhotopea(`app.open("${imageData}", null, ${imageSizeMatches});`, "*")
+            // Actually open the image, passing `imageSizeMatches` into PS's "open as new document" parameter.
+            postMessageToPS(`app.open("${imageData}", null, ${imageSizeMatches});`, "*")
                 .then(() => {
                     if (imageSizeMatches) {
-                        postMessageToPhotopea(`app.activeDocument.activeLayer.rasterize();`, "*");
+                        postMessageToPS(`app.activeDocument.activeLayer.rasterize();`, "*");
                     } else {
-                        postMessageToPhotopea(
+                        postMessageToPS(
                             `alert("New document created as the image sent is bigger than the active document");`,
                             "*");
                     }
@@ -86,21 +86,21 @@ function openImageInPhotopea(originGallery) {
     });
 }
 
-// Requests the image from Photopea, converts the array result into a base64 png, then a blob, then
+// Requests the image from PS, converts the array result into a base64 png, then a blob, then
 // actually send it to the WebUI.
 function getAndSendImageToWebUITab(webUiTab, sendToControlnet, imageWidgetIndex, isCurrentLayer) {
-    // Photopea only allows exporting the whole image, so in case "Active layer only" is selected in
+    // PS only allows exporting the whole image, so in case "Active layer only" is selected in
     // the UI, instead of just requesting the image to be saved, we also make all non-selected
     // layers invisible.
     // const saveMessage = activeLayerOnly()
-    //     ? getPhotopeaScriptString(exportSelectedLayerOnly)
+    //     ? getPSScriptString(exportSelectedLayerOnly)
     //     : 'app.activeDocument.saveToOE("png");';
 
     const saveMessage = isCurrentLayer === 'true'
-      ? getPhotopeaScriptString(exportSelectedLayerOnly)
+      ? getPSScriptString(exportSelectedLayerOnly)
       : 'app.activeDocument.saveToOE("png");';
 
-    postMessageToPhotopea(saveMessage)
+    postMessageToPS(saveMessage)
         .then((resultArray) => {
             // The first index of the payload is an ArrayBuffer of the image. We convert that to
             // base64 string, then to blob, so it can be sent to a specific image widget in WebUI.
@@ -118,7 +118,7 @@ function getAndSendImageToWebUITab(webUiTab, sendToControlnet, imageWidgetIndex,
 // Send image to a specific image widget in a Web UI tab. This basically navigates the DOM graph via
 // queries, and magically presses buttons. You web developers sure work some dark magic.
 function sendImageToWebUi(webUiTab, sendToControlNet, controlnetModelIndex, blob) {
-    const file = new File([blob], "photopea_output.png")
+    const file = new File([blob], "PS_output.png")
 
     switch (webUiTab) {
         case "txt2img":
@@ -152,42 +152,42 @@ function sendImageToWebUi(webUiTab, sendToControlNet, controlnetModelIndex, blob
 // from selection.
 function sendImageWithMaskSelectionToWebUi() {
     // Start by verifying if there actually is a selection in the document.
-    postMessageToPhotopea(getPhotopeaScriptString(selectionExists))
+    postMessageToPS(getPSScriptString(selectionExists))
         .then((response) => {
             if (response[0] === false) {
-                // In case there isn't, do an in-photopea alert (which is less intrusive but more
+                // In case there isn't, do an in-PS alert (which is less intrusive but more
                 // visible).
-                postMessageToPhotopea(`alert("No selection in active document!");`);
+                postMessageToPS(`alert("No selection in active document!");`);
             } else {
                 // Let's start by swapping to the correct tab. This is a bit more involved due to
                 // Gradio's reconstruction of disabled UI elements.
                 goToImg2ImgInpaintUpload(() => {
-                    // In case there is a selection, we'll pass a whole script payload to Photopea
+                    // In case there is a selection, we'll pass a whole script payload to PS
                     // to create the mask and export it.
                     const fullMessage =
-                        getPhotopeaScriptString(createMaskFromSelection) + // 1. Create the mask
-                        getPhotopeaScriptString(exportSelectedLayerOnly) + // 2. Function that exports the image
+                        getPSScriptString(createMaskFromSelection) + // 1. Create the mask
+                        getPSScriptString(exportSelectedLayerOnly) + // 2. Function that exports the image
                         `app.activeDocument.activeLayer.remove();`;        // 3. Removes the temp mask layer
 
-                    postMessageToPhotopea(fullMessage).then((resultArray) => {
+                    postMessageToPS(fullMessage).then((resultArray) => {
                         // Set the mask.
                         const base64Png = base64ArrayBuffer(resultArray[0]);
                         const maskInput = gradioApp().getElementById("img_inpaint_mask").querySelector("input");
                         const blob = b64toBlob(base64Png, "image/png");
-                        const file = new File([blob], "photopea_output.png");
+                        const file = new File([blob], "PS_output.png");
                         setImageOnInput(maskInput, file);
 
                         // Now go in and get the actual image.
                         const saveMessage = activeLayerOnly()
-                            ? getPhotopeaScriptString(exportSelectedLayerOnly)
+                            ? getPSScriptString(exportSelectedLayerOnly)
                             : 'app.activeDocument.saveToOE("png");';
 
-                        postMessageToPhotopea(saveMessage)
+                        postMessageToPS(saveMessage)
                             .then((resultArray) => {
                                 const base64Png = base64ArrayBuffer(resultArray[0]);
                                 const baseImgInput = gradioApp().getElementById("img_inpaint_base").querySelector("input");
                                 const blob = b64toBlob(base64Png, "image/png");
-                                const file = new File([blob], "photopea_output.png");
+                                const file = new File([blob], "PS_output.png");
                                 setImageOnInput(baseImgInput, file);
                             });
                     });
@@ -240,30 +240,30 @@ function setImageOnInput(imageInput, file) {
     imageInput.dispatchEvent(event);
 }
 
-// Transforms a JS function body into a string that can be passed as a message to Photopea.
-function getPhotopeaScriptString(func) {
+// Transforms a JS function body into a string that can be passed as a message to PS.
+function getPSScriptString(func) {
     return func.toString() + `${func.name}();`
 }
 
 // Posts a message and receives back a promise that will eventually return a 2-element array. One of
-// them will be Photopea's "done" message, and the other the actual payload.
-async function postMessageToPhotopea(message) {
+// them will be PS's "done" message, and the other the actual payload.
+async function postMessageToPS(message) {
     var request = new Promise(function (resolve, reject) {
         var responses = [];
-        var photopeaMessageHandle = function (response) {
+        var PSMessageHandle = function (response) {
             responses.push(response.data);
-            // Photopea will first return the resulting data as a message to the parent window, then
+            // PS will first return the resulting data as a message to the parent window, then
             // another message saying "done". When we receive the latter, we fulfill the promise.
             if (response.data == "done") {
-                window.removeEventListener("message", photopeaMessageHandle);
+                window.removeEventListener("message", PSMessageHandle);
                 resolve(responses)
             }
         };
-        // Add a listener to wait for Photopea's response messages.
-        window.addEventListener("message", photopeaMessageHandle);
+        // Add a listener to wait for PS's response messages.
+        window.addEventListener("message", PSMessageHandle);
     });
-    // Actually execute the request to Photopea.
-    photopeaWindow.postMessage(message, "*");
+    // Actually execute the request to PS.
+    PSWindow.postMessage(message, "*");
     return await request;
 }
 
@@ -307,26 +307,26 @@ function controlNetAccordionIsCollapsed(controlNetDiv) {
     return false;
 }
 
-// Called by the iframe set up on photopea-tab.py.
-function onPhotopeaLoaded(iframe) {
-    console.log("Photopea iFrame loaded");
-    photopeaWindow = iframe.contentWindow;
-    photopeaIframe = iframe;
+// Called by the iframe set up on PS-tab.py.
+function onPSLoaded(iframe) {
+    console.log("PS iFrame loaded");
+    PSWindow = iframe.contentWindow;
+    PSIframe = iframe;
 
     // Clone some buttons to send the contents of galleries in txt2img, img2img and extras tabs
-    // to Photopea. You can also just copy-paste the images directly but these are the ones I
+    // to PS. You can also just copy-paste the images directly but these are the ones I
     // use the most.
-    createSendToPhotopeaButton("image_buttons_txt2img", window.txt2img_gallery);
-    createSendToPhotopeaButton("image_buttons_img2img", window.img2img_gallery);
-    createSendToPhotopeaButton("image_buttons_extras", window.extras_gallery);
+    createSendToPSButton("image_buttons_txt2img", window.txt2img_gallery);
+    createSendToPSButton("image_buttons_img2img", window.img2img_gallery);
+    createSendToPSButton("image_buttons_extras", window.extras_gallery);
 
     // Listen to the size slider changes.
-    // gradioApp().getElementById("photopeaIframeSlider").addEventListener('input', (event) => {
+    // gradioApp().getElementById("PSIframeSlider").addEventListener('input', (event) => {
     //     // Get the value of the slider and parse it as an integer
     //     const newHeight = parseInt(event.target.value);
     //
     //     // Update the height of the iframe
-    //     photopeaIframe.style.height = newHeight + 'px';
+    //     PSIframe.style.height = newHeight + 'px';
     // });
 
     // 接收来自子级页面的消息
